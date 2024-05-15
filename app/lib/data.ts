@@ -37,23 +37,28 @@ export async function fetchLatestInvoices() {
   noStore();
   try {
     const data = await sql<LatestInvoiceRaw>`
-      SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
-      FROM invoices
-      JOIN customers ON invoices.customer_id = customers.id
-      ORDER BY invoices.date DESC
-      LIMIT 5`;
+    SELECT  * FROM customers;`;
 
-    const latestInvoices = data.rows.map((invoice) => ({
-      ...invoice,
-      amount: formatCurrency(invoice.amount),
-    }));
-    return latestInvoices;
+    return data.rows;
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch the latest invoices.');
   }
 }
 
+export async function insertInvoices(name: string) {
+  noStore();
+  try {
+    const data = await sql<LatestInvoiceRaw>`
+    INSERT INTO customers (name, email, image_url)
+VALUES (${name},'email','/customers/balazs-orban.png');`;
+
+    return data.rows;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch the latest invoices.');
+  }
+}
 export async function fetchCardData() {
   noStore();
   try {
