@@ -46,12 +46,38 @@ export async function fetchLatestInvoices() {
   }
 }
 
+export async function searchInvoices(name?: string) {
+  noStore();
+  try {
+    const data = await sql<LatestInvoiceRaw>`
+    SELECT  * FROM customers where name = ${name};`;
+    return data.rows;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch the latest invoices.');
+  }
+}
+
 export async function insertInvoices(name: string) {
   noStore();
   try {
     const data = await sql<LatestInvoiceRaw>`
     INSERT INTO customers (name, email, image_url)
 VALUES (${name},'email','/customers/balazs-orban.png');`;
+
+    return data.rows;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch the latest invoices.');
+  }
+}
+
+export async function deleteInvoices(id: string) {
+  noStore();
+  try {
+    const data = await sql<LatestInvoiceRaw>`
+    DELETE FROM customers
+    WHERE id=${id};`;
 
     return data.rows;
   } catch (error) {

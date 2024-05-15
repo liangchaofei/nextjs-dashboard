@@ -3,19 +3,19 @@ import React, { useState } from 'react';
 import { Button, Input } from 'antd';
 
 interface IProps {
-  handleAdd: (value: string) => void;
+  handleSearch: (value: string) => void;
 }
 
 const Add = (props: IProps) => {
-  const { handleAdd } = props;
+  const { handleSearch } = props;
   const [value, setValue] = useState('');
   const handleClick = () => {
-    handleAdd && handleAdd(value);
+    handleSearch && handleSearch(value);
   };
   return (
     <>
       <Input onChange={(e) => setValue(e.target.value)} />
-      <Button onClick={handleClick}>添加</Button>
+      <Button onClick={handleClick}>查询</Button>
     </>
   );
 };

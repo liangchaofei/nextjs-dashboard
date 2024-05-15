@@ -3,14 +3,31 @@ import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import Image from 'next/image';
 import { lusitana } from '@/app/ui/fonts';
-import { fetchLatestInvoices, insertInvoices } from '@/app/lib/data';
+import {
+  fetchLatestInvoices,
+  insertInvoices,
+  deleteInvoices,
+  searchInvoices,
+} from '@/app/lib/data';
 import Add from './Add';
-
+import Delete from './Delete';
+import Search from './Search';
+let data;
 export default async function LatestInvoices() {
-  const latestInvoices = await fetchLatestInvoices();
+  data = await fetchLatestInvoices();
   const handleAdd = async (value: string) => {
     'use server';
     await insertInvoices(value);
+  };
+
+  const handleDelete = async (record: any) => {
+    'use server';
+    await deleteInvoices(record.id);
+  };
+  const handleSearch = async (value: string) => {
+    'use server';
+    data = await searchInvoices(value);
+    console.log('data', data);
   };
   return (
     <div className="flex w-full flex-col md:col-span-4">
@@ -20,10 +37,10 @@ export default async function LatestInvoices() {
       <div className="flex grow flex-col justify-between rounded-xl bg-gray-50 p-4">
         <div className="mb-4 flex items-center">
           <Add handleAdd={handleAdd} />
+          <Search handleSearch={handleSearch} />
         </div>
-
         <div className="bg-white px-6">
-          {latestInvoices.map((invoice, i) => (
+          {data.map((invoice, i) => (
             <div
               key={invoice.id}
               className={clsx(
@@ -50,6 +67,7 @@ export default async function LatestInvoices() {
                   </p>
                 </div>
               </div>
+              <Delete invoice={invoice} handleDelete={handleDelete} />
               <p
                 className={`${lusitana.className} truncate text-sm font-medium md:text-base`}
               >
@@ -63,30 +81,6 @@ export default async function LatestInvoices() {
           <h3 className="ml-2 text-sm text-gray-500 ">Updated just now</h3>
         </div>
       </div>
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-          document.getElementById('insertButton').addEventListener('click', async () => {
-            const nameInput = document.getElementById('nameInput').value;
-            if (nameInput.trim() !== '') {
-              try {
-                await fetch('/api/insertInvoices', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({ name: nameInput }),
-                });
-                // 可以在这里刷新页面或者重新加载数据
-                console.log('Inserted invoice:', nameInput);
-              } catch (error) {
-                console.error('Error inserting invoice:', error);
-              }
-            }
-          });
-        `,
-        }}
-      />
     </div>
   );
 }
